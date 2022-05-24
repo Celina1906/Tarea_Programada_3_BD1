@@ -31,38 +31,16 @@ app.set('view-engine', 'ejs');
 app.get('/', (req, res) => {
     res.render('login.ejs',{mensaje:""});
 })
-app.get('/ventanaPrincipalEmp', (req, res) => {
-    res.render('ventanaPrincipalEmp.ejs', {mensajeError : "",
+
+app.get('/consultaPlanilla', (req, res) => {
+    res.render('consultaPlanilla.ejs', {mensajeError : "",
     tipoDatos : "", datos : []});
 })
-app.get('/ventanaPrincipalAdmin', (req, res) => {
-    res.render('ventanaPrincipalAdmin.ejs', {mensajeError : "",
-    tipoDatos : "", datos : []});
+
+app.post('/salir', (req, res) => {
+    res.redirect('./');
 })
-/*app.get('/ventanaPrincipal', (req, res) => {
-    res.render('ventanaPrincipal.ejs', {mensajeError : "",
-    tipoDatos : "", datos : []});
-})*/
-app.post('/insertarPuesto', (req, res) => {
-    res.render('insertarPuesto.ejs');
-})
-app.post('/insertarEmpleado', (req, res) => {
-    res.render('insertarEmpleado.ejs', {
-        listaPuestos : listaPuestos,
-        listaDepartamentos : listaDepartamentos,
-        listaTipoDoc : listaTipoDoc
-    });
-})
-app.post('/editarEmpleado', (req, res) => {
-    idGlobal = req.body.empleadosListBox;
-    res.render('editarEmpleado.ejs', {
-        listaPuestos : ""
-    });
-})
-app.post('/editarPuesto', (req, res) => {
-    idGlobal = req.body.puestosListBox;
-    res.render('editarPuesto.ejs')
-})
+
 
 // Funciones de las paginas web
 app.post('/login', (req, res) => {
@@ -74,86 +52,15 @@ app.post('/login', (req, res) => {
 })
 app.post('/consultarPlanillaSemanal', (req, res) => {
     //console.log(listaPuestos);
-    res.render('ventanaPrincipalEmp.ejs', {mensajeError : "",
+    res.render('consultaPlanilla.ejs', {mensajeError : "",
     tipoDatos : "planillaSemanal"});
 })
 
 app.post('/consultarPlanillaMensual', (req, res) => {
     //console.log(listaPuestos);
-    res.render('ventanaPrincipalEmp.ejs', {mensajeError : "",
+    res.render('consultaPlanilla.ejs', {mensajeError : "",
     tipoDatos : "planillaMensual"});
 })
-
-app.post('/listarPuestos', (req, res) => {
-    console.log(listaPuestos);
-    res.render('ventanaPrincipalAdmin.ejs', {mensajeError : "",
-    tipoDatos : "puestos", datos : listaPuestos});
-})
-app.post('/listarEmpleados', (req, res) => {
-    //console.log(listaEmpleados);
-    res.render('ventanaPrincipalAdmin.ejs', {mensajeError : "",
-    tipoDatos : "empleados", datos : listaEmpleados});
-})
-app.post('/eliminarPuesto', (req, res) => {
-    eliminarPuesto(req.body.puestosListBox);
-    res.render('ventanaPrincipalAdmin.ejs', {mensajeError : "",
-    tipoDatos : "puestos", datos : listaPuestos});
-})
-app.post('/eliminarEmpleado', (req, res) => {
-    eliminarEmpleado(req.body.empleadosListBox);
-    res.render('ventanaPrincipalAdmin.ejs', {mensajeError : "",
-    tipoDatos : "empleados", datos : listaEmpleados});
-})
-app.post('/insertarPuestoB', (req, res) => {
-    let nuevoPuesto = {Puesto: req.body.nombrePuesto,
-    SalarioXHora: req.body.salario};
-    console.log(nuevoPuesto);
-    insertarPuestoFunc(nuevoPuesto);
-    res.redirect('./ventanaPrincipalAdmin');
-})
-app.post('/insertarEmpleadoB', (req, res) => {
-    let nuevoEmpleado = {
-        Nombre : req.body.nomEmpleado,
-        IdTipoIdentificacion : req.body.tipoIdentificacionSeleccion,
-        ValorDocumentoIdentificacion : req.body.valorDoc,
-        IdDepartamento : req.body.departamentoSeleccion,
-        Puesto : req.body.puestoSeleccion,
-        FechaNacimiento : req.body.fechaNacimiento
-    };
-    insertarEmpleadoFunc(nuevoEmpleado);
-    res.redirect('./ventanaPrincipalAdmin');
-})
-app.post('/filtrarEmpleado', (req, res) => {
-    filtro = req.body.nomEmpleado;
-    filtrarNombre(filtro, res);
-})
-app.post('/editarEmpleadoB', (req, res) => {
-    let empleadoEditado = {
-        Nombre : req.body.nomEmpleado,
-        IdTipoIdentificacion : req.body.tipoIdentificacionSeleccion,
-        ValorDocumentoIdentificacion : req.body.valorDoc,
-        FechaNacimiento : req.body.fechaNacimiento,
-        Puesto : req.body.puestoSeleccion,
-        IdDepartamento : req.body.departamentoSeleccion
-    };
-    editarEmpleadoFunc(empleadoEditado);
-    res.redirect('./ventanaPrincipalAdmin');
-})
-app.post('/editarPuestoB', (req, res) => {
-    let puestoEditado = {
-        Nombre : req.body.nomPuesto,
-        SalarioXHora : req.body.salario
-    };
-    editarPuestoFunc(puestoEditado);
-    res.redirect('./ventanaPrincipalAdmin');
-})
-app.post('/cancelar', (req, res) => {
-    res.redirect('./ventanaPrincipalAdmin');
-})
-app.post('/salir', (req, res) => {
-    res.redirect('./');
-})
-
 
 
 // Funciones logicas
@@ -164,8 +71,8 @@ function validarDatos (adminDatos, res) {
         outResult : 0});
         if (resultado != undefined) {
             console.log(resultado.data[0][0]);
-            if (resultado.data[0][0].outResult == 0)//Hay que validar si es admin o empleado
-                res.redirect("./ventanaPrincipal");
+            if (resultado.data[0][0].outResult == 0)
+                res.redirect("./consultaPlanilla");
             else
                 if (resultado.data[0][0].outResult == 1002)
                     res.render("login.ejs",{mensaje:"Combinación de usuario/password no existe en la BD"});
@@ -266,73 +173,6 @@ function cargarDepartamentos() {
     }, 1500)
 }
 
-function eliminarPuesto(nomPuesto) {
-    for (puesto of listaPuestos) {
-        if (puesto[1].Puesto == nomPuesto) {
-            puesto[0] = true;
-        }
-    }
-    return;
-}
-
-function eliminarEmpleado(idEmpleado) {
-    for (empleado of listaEmpleados) {
-        if (empleado[1].ID == idEmpleado) {
-            empleado[0] = true;
-            return;
-        }
-    }
-    return;
-}
-
-function insertarPuestoFunc(nuevoPuesto) {
-    setTimeout(async () => {
-        const respuesta = await based.executeStoredProcedure('InsertarPuesto', null,
-        {inPuesto : nuevoPuesto.Puesto, inSalario : nuevoPuesto.SalarioXHora, outResult : 0});
-        cargarPuestos();
-    }, 1500)
-}
-
-function insertarEmpleadoFunc(nuevoEmpleado) {
-    setTimeout(async () => {
-        const respuesta = await based.executeStoredProcedure('InsertarEmpleado', null,
-        {inNombre : nuevoEmpleado.Nombre,
-        inIdTipoIdentificacion : nuevoEmpleado.IdTipoIdentificacion,
-        inValorDocIdentificacion : nuevoEmpleado.ValorDocumentoIdentificacion,
-        inIdDepartamento : nuevoEmpleado.IdDepartamento,
-        inPuesto : nuevoEmpleado.Puesto,
-        inFechaNacimiento : nuevoEmpleado.FechaNacimiento, 
-        outResult : 0});
-        cargarEmpleados();
-    }, 1500)
-}
-
-function editarEmpleadoFunc(empleadoEditado) {
-    setTimeout(async () => {
-        const respuesta = await based.executeStoredProcedure('EditarEmpleado', null,
-        {inIdEditar : idGlobal,
-        inNombre : empleadoEditado.Nombre,
-        inIdTipoIdentificacion : empleadoEditado.IdTipoIdentificacion,
-        inValorDocIdentificacion : empleadoEditado.ValorDocumentoIdentificacion,
-        inIdDepartamento : empleadoEditado.IdDepartamento,
-        inPuesto : empleadoEditado.Puesto,
-        inFechaNacimiento : empleadoEditado.FechaNacimiento, 
-        outResult : 0});
-        cargarEmpleados();
-    }, 1500)
-}
-
-function editarPuestoFunc(puestoEditado) {
-    console.log(idGlobal);
-    setTimeout(async () => {
-        const respuesta = await based.executeStoredProcedure('EditarPuesto', null,
-        {inIdEditar : idGlobal,
-        inNombre : puestoEditado.Nombre,
-        inSalarioXHora : puestoEditado.SalarioXHora,
-        outResult : 0});
-        cargarPuestos();
-    }, 1500)
-}
 
 // Creacion del puerto para acceder la pagina web
 app.listen(3000)

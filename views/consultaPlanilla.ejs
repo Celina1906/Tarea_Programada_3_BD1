@@ -4,7 +4,7 @@
     <% } else if (tipoDatos == "planillaMensual") { %>
     PLANILLA MENSUAL
     <% } else { %>
-    VENTANA PRINCIPAL
+    CONSULTA PLANILLA
     <% } %>
     <script>
         function deshabilitarBoton(){
@@ -18,7 +18,7 @@
             }
         }
     </script>
-    <form action = "ventanaPrincipalEmp" method = "POST">
+    <form action = "ventanaPrincipal" method = "POST">
         <div>
             <button formaction = "consultarPlanillaSemanal" name = "btnConsultarPlanillaSemanal">
                 Consulta Planilla Semanal
