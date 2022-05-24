@@ -35,6 +35,10 @@ app.get('/ventanaPrincipalEmp', (req, res) => {
     res.render('ventanaPrincipalEmp.ejs', {mensajeError : "",
     tipoDatos : "", datos : []});
 })
+app.get('/ventanaPrincipalAdmin', (req, res) => {
+    res.render('ventanaPrincipalAdmin.ejs', {mensajeError : "",
+    tipoDatos : "", datos : []});
+})
 /*app.get('/ventanaPrincipal', (req, res) => {
     res.render('ventanaPrincipal.ejs', {mensajeError : "",
     tipoDatos : "", datos : []});
@@ -73,19 +77,31 @@ app.post('/consultarPlanillaSemanal', (req, res) => {
     res.render('ventanaPrincipalEmp.ejs', {mensajeError : "",
     tipoDatos : "planillaSemanal"});
 })
+
+app.post('/consultarPlanillaMensual', (req, res) => {
+    //console.log(listaPuestos);
+    res.render('ventanaPrincipalEmp.ejs', {mensajeError : "",
+    tipoDatos : "planillaMensual"});
+})
+
+app.post('/listarPuestos', (req, res) => {
+    console.log(listaPuestos);
+    res.render('ventanaPrincipalAdmin.ejs', {mensajeError : "",
+    tipoDatos : "puestos", datos : listaPuestos});
+})
 app.post('/listarEmpleados', (req, res) => {
     //console.log(listaEmpleados);
-    res.render('ventanaPrincipal.ejs', {mensajeError : "",
+    res.render('ventanaPrincipalAdmin.ejs', {mensajeError : "",
     tipoDatos : "empleados", datos : listaEmpleados});
 })
 app.post('/eliminarPuesto', (req, res) => {
     eliminarPuesto(req.body.puestosListBox);
-    res.render('ventanaPrincipal.ejs', {mensajeError : "",
+    res.render('ventanaPrincipalAdmin.ejs', {mensajeError : "",
     tipoDatos : "puestos", datos : listaPuestos});
 })
 app.post('/eliminarEmpleado', (req, res) => {
     eliminarEmpleado(req.body.empleadosListBox);
-    res.render('ventanaPrincipal.ejs', {mensajeError : "",
+    res.render('ventanaPrincipalAdmin.ejs', {mensajeError : "",
     tipoDatos : "empleados", datos : listaEmpleados});
 })
 app.post('/insertarPuestoB', (req, res) => {
@@ -93,7 +109,7 @@ app.post('/insertarPuestoB', (req, res) => {
     SalarioXHora: req.body.salario};
     console.log(nuevoPuesto);
     insertarPuestoFunc(nuevoPuesto);
-    res.redirect('./ventanaPrincipal');
+    res.redirect('./ventanaPrincipalAdmin');
 })
 app.post('/insertarEmpleadoB', (req, res) => {
     let nuevoEmpleado = {
@@ -105,7 +121,7 @@ app.post('/insertarEmpleadoB', (req, res) => {
         FechaNacimiento : req.body.fechaNacimiento
     };
     insertarEmpleadoFunc(nuevoEmpleado);
-    res.redirect('./ventanaPrincipal');
+    res.redirect('./ventanaPrincipalAdmin');
 })
 app.post('/filtrarEmpleado', (req, res) => {
     filtro = req.body.nomEmpleado;
@@ -121,7 +137,7 @@ app.post('/editarEmpleadoB', (req, res) => {
         IdDepartamento : req.body.departamentoSeleccion
     };
     editarEmpleadoFunc(empleadoEditado);
-    res.redirect('./ventanaPrincipal');
+    res.redirect('./ventanaPrincipalAdmin');
 })
 app.post('/editarPuestoB', (req, res) => {
     let puestoEditado = {
@@ -129,10 +145,10 @@ app.post('/editarPuestoB', (req, res) => {
         SalarioXHora : req.body.salario
     };
     editarPuestoFunc(puestoEditado);
-    res.redirect('./ventanaPrincipal');
+    res.redirect('./ventanaPrincipalAdmin');
 })
 app.post('/cancelar', (req, res) => {
-    res.redirect('./ventanaPrincipal');
+    res.redirect('./ventanaPrincipalAdmin');
 })
 app.post('/salir', (req, res) => {
     res.redirect('./');
@@ -148,7 +164,7 @@ function validarDatos (adminDatos, res) {
         outResult : 0});
         if (resultado != undefined) {
             console.log(resultado.data[0][0]);
-            if (resultado.data[0][0].outResult == 0)
+            if (resultado.data[0][0].outResult == 0)//Hay que validar si es admin o empleado
                 res.redirect("./ventanaPrincipal");
             else
                 if (resultado.data[0][0].outResult == 1002)
@@ -168,7 +184,7 @@ function filtrarNombre (nombre, res) {
                     existe[0] === false && existe[1].Nombre === empleado.Nombre))
                     empleadosFiltrados.push([false, empleado]);
             }
-            res.render('ventanaPrincipal.ejs', {mensajeError : "",
+            res.render('ventanaPrincipalAdmin.ejs', {mensajeError : "",
             tipoDatos : "empleados", datos : empleadosFiltrados});
         }
     }, 1500)
