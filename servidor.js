@@ -1,9 +1,9 @@
-// Importacion de modulos
+/*// Importacion de modulos*/
 const express = require('express');
-const { redirect } = require('express/lib/response');
-const res = require('express/lib/response')
+/*const { redirect } = require('express/lib/response');
+const res = require('express/lib/response')*/
 const app = express()
-const based = new (require('rest-mssql-nodejs'))({
+/*const based = new (require('rest-mssql-nodejs'))({
     user: "programa",
     password: "programa",
     server: "25.81.172.46",
@@ -21,7 +21,7 @@ let listaDepartamentos = [];
 cargarPuestos();
 cargarEmpleados();
 cargarTipoDoc();
-cargarDepartamentos();
+cargarDepartamentos();*/
 
 // Establecimiento de parametros para la pagina web
 app.use(express.urlencoded({extended: false}));
@@ -31,10 +31,14 @@ app.set('view-engine', 'ejs');
 app.get('/', (req, res) => {
     res.render('login.ejs',{mensaje:""});
 })
-app.get('/ventanaPrincipal', (req, res) => {
-    res.render('ventanaPrincipal.ejs', {mensajeError : "",
+app.get('/ventanaPrincipalEmp', (req, res) => {
+    res.render('ventanaPrincipalEmp.ejs', {mensajeError : "",
     tipoDatos : "", datos : []});
 })
+/*app.get('/ventanaPrincipal', (req, res) => {
+    res.render('ventanaPrincipal.ejs', {mensajeError : "",
+    tipoDatos : "", datos : []});
+})*/
 app.post('/insertarPuesto', (req, res) => {
     res.render('insertarPuesto.ejs');
 })
@@ -48,9 +52,7 @@ app.post('/insertarEmpleado', (req, res) => {
 app.post('/editarEmpleado', (req, res) => {
     idGlobal = req.body.empleadosListBox;
     res.render('editarEmpleado.ejs', {
-        listaPuestos : listaPuestos,
-        listaDepartamentos : listaDepartamentos,
-        listaTipoDoc : listaTipoDoc
+        listaPuestos : ""
     });
 })
 app.post('/editarPuesto', (req, res) => {
@@ -66,13 +68,13 @@ app.post('/login', (req, res) => {
     };
     validarDatos(admin, res);
 })
-app.post('/listarPuestos', (req, res) => {
-    console.log(listaPuestos);
-    res.render('ventanaPrincipal.ejs', {mensajeError : "",
-    tipoDatos : "puestos", datos : listaPuestos});
+app.post('/consultarPlanillaSemanal', (req, res) => {
+    //console.log(listaPuestos);
+    res.render('ventanaPrincipalEmp.ejs', {mensajeError : "",
+    tipoDatos : "planillaSemanal"});
 })
 app.post('/listarEmpleados', (req, res) => {
-    console.log(listaEmpleados);
+    //console.log(listaEmpleados);
     res.render('ventanaPrincipal.ejs', {mensajeError : "",
     tipoDatos : "empleados", datos : listaEmpleados});
 })

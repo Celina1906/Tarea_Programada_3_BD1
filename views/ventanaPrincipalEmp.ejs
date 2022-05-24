@@ -1,0 +1,68 @@
+<h1>
+    <% if (tipoDatos == "planillaSemanal") { %>
+    PLANILLA SEMANAL
+    <% } else if (tipoDatos == "planillaMensual") { %>
+    PLANILLA MENSUAL
+    <% } else { %>
+    VENTANA PRINCIPAL
+    <% } %>
+    <script>
+        function deshabilitarBoton(){
+            var cant = document.getElementById('cantidad').value;
+            cant = Number(cant);
+            if (cant == "" || (!isNaN(cant) && cant == Math.trunc(cant))){
+                document.getElementById('cantBoton').disabled = false;
+            }
+            else{
+                document.getElementById('cantBoton').disabled = true;    
+            }
+        }
+    </script>
+    <form action = "ventanaPrincipalEmp" method = "POST">
+        <div>
+            <button formaction = "consultarPlanillaSemanal" name = "btnConsultarPlanillaSemanal">
+                Consulta Planilla Semanal
+            </button>
+            <button formaction = "consultarPlanillaSemanal" name = "btnConsultarPlanillaMensual">
+                Consulta Planilla Mensual
+            </button>
+            <button formaction = "salir" name = "salirBoton">
+                Salir
+            </button>
+        </div>
+        <div>
+            <%=mensajeError%>
+            <% if (tipoDatos == "planillaSemanal") { %>
+                <div style = "font-size: large;">
+                    Planilla Semanal
+                </div>
+                <select id = "planillaSemanalListBox" name = "planillaSemanalListBox" size = "15">
+              
+                </select>
+            <% } else if (tipoDatos == "planillaMensual") { %>
+                <div style = "font-size: large;">
+                    Planilla Mensual
+                </div>
+                <select id = "planillaMensualListBox" name = "planillaMensualListBox" size = "15">
+                    <% for (planillaMensual of datos) {%>
+                        <% if (planillaMensual[0] == false) { %>
+                                <option value = 
+                                "<%= planillaMensual[1].ID %>"
+                                style = "font-size: large;">
+                                    <%= planillaMensual[1].dato1 + " | " + planillaMensual[1].dato2 %>
+                                </option>
+                        <% } %>
+                    <% } %>
+                </select>
+                <div>
+                    <button formaction = "editarEmpleado" id = "editarEmpleadoB">
+                        Editar
+                    </button>
+                    <button formaction = "eliminarEmpleado" id = "eliminarEmpleadoB">
+                        Eliminar
+                    </button>
+                </div>
+            <% } else {} %>
+        </div>
+    </form>
+</h1>
