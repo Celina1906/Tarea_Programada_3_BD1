@@ -37,16 +37,25 @@
                     Planilla Semanal
                 </div>
                 <select id = "planillaSemanalListBox" name = "planillaSemanalListBox" size = "15">
-              
+                    
                 </select>
             <% } else if (tipoDatos == "planillaMensual") { %>
                 <div style = "font-size: large;">
                     Planilla Mensual
                 </div>
-                <select id = "planillaMensualListBox" name = "planillaMensualListBox" size = "15">
-                   
-            
-                </select>
+                <div>
+                    <select id = "planillaMensualListBox" name = "planillaMensualListBox" size = "15">
+                        <% for (fila of datos) { %>
+                            <option value = "<%= fila.Id %>"> <%= fila.Mes + " | " + fila.SalarioTotal
+                                + " | " + fila.SalarioNeto + " | " + fila.TotalDeducciones %> </option>
+                        <% } %>
+                    </select>
+                </div>
+                <div>
+                    <button formaction = "deducciones" name = "deducciones">
+                        Mostrar Deducciones
+                    </button>
+                </div>
             <% } else {} %>
         </div>
     </form>

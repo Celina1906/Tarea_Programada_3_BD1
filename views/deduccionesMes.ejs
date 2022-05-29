@@ -1,0 +1,17 @@
+<h1>
+    DEDUCCIONES POR MES
+    <form>
+        <select id = "deduccionesXMes" name = "deduccionesXMes" size = "15">
+            <% for (fila of datos) { %>
+                <option>
+                    <%= fila.Nombre + " | " + fila.Porcentaje + " | " + fila.Monto %>
+                </option>
+            <% } %>
+        </select>
+        <div>
+            <button formaction = "regresarDeduccion" name = "regresarDeduccionesMes">
+                Regresar
+            </button>
+        </div>
+    </form>
+</h1>

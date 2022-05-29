@@ -1,27 +1,22 @@
 /*// Importacion de modulos*/
 const express = require('express');
+const { redirect } = require('express/lib/response');
 /*const { redirect } = require('express/lib/response');
 const res = require('express/lib/response')*/
 const app = express()
-/*const based = new (require('rest-mssql-nodejs'))({
+const based = new (require('rest-mssql-nodejs'))({
     user: "programa",
     password: "programa",
-    server: "25.81.172.46",
-    database: "Tarea Programada 2",
+    server: "25.6.233.172",
+    database: "Tarea Programada 3",
     encrypt: true
 })
 
 // Variables
-var admin = {};
-let idGlobal;
-let listaPuestos = [];
-let listaEmpleados = [];
-let listaTipoDoc = [];
-let listaDepartamentos = [];
-cargarPuestos();
-cargarEmpleados();
-cargarTipoDoc();
-cargarDepartamentos();*/
+var usuario = {};
+var datosConsulta = {};
+var datosDeduccion = {};
+var IdEmpleado = 0;
 
 // Establecimiento de parametros para la pagina web
 app.use(express.urlencoded({extended: false}));
@@ -34,7 +29,16 @@ app.get('/', (req, res) => {
 
 app.get('/consultaPlanilla', (req, res) => {
     res.render('consultaPlanilla.ejs', {mensajeError : "",
-    tipoDatos : "", datos : []});
+    tipoDatos : "", datos : {}});
+})
+
+app.get('/deduccionesMes', (req, res) => {
+    res.render('deduccionesMes.ejs',
+        {datos : datosDeduccion});
+})
+
+app.get('/regresarDeduccion', (req, res) => {
+    res.redirect('./consultaPlanilla');
 })
 
 app.post('/salir', (req, res) => {
@@ -44,135 +48,75 @@ app.post('/salir', (req, res) => {
 
 // Funciones de las paginas web
 app.post('/login', (req, res) => {
-    admin = {
+    usuario = {
         user : req.body.name,
         password : req.body.pass
     };
-    validarDatos(admin, res);
+    validarDatos(usuario, res);
 })
 app.post('/consultarPlanillaSemanal', (req, res) => {
-    //console.log(listaPuestos);
     res.render('consultaPlanilla.ejs', {mensajeError : "",
     tipoDatos : "planillaSemanal"});
 })
 
 app.post('/consultarPlanillaMensual', (req, res) => {
-    //console.log(listaPuestos);
-    res.render('consultaPlanilla.ejs', {mensajeError : "",
-    tipoDatos : "planillaMensual"});
+    obtenerMesPlanilla(res);
 })
 
+app.post('/deducciones', (req, res) => {
+    obtenerDeducciones(req.body.planillaMensualListBox, res);
+})
+
+app.post('/regresarDeduccion', (req, res) => {
+    res.redirect("./consultaPlanilla");
+})
 
 // Funciones logicas
-function validarDatos (adminDatos, res) {
+function validarDatos (usuarioDatos, res) {
     setTimeout(async () => {
-        const resultado = await based.executeStoredProcedure('ValidarAdministradores',
-        null, {inUserName : adminDatos.user, inPassword : adminDatos.password,
+        const resultado = await based.executeStoredProcedure('ValidarUsuario',
+        null, {inUserName : usuarioDatos.user, inPassword : usuarioDatos.password,
         outResult : 0});
         if (resultado != undefined) {
-            console.log(resultado.data[0][0]);
-            if (resultado.data[0][0].outResult == 0)
+            console.log(resultado.data);
+            if (resultado.data[0][0].outResult == 0) {
+                IdEmpleado = resultado.data[0][0].IdEmpleado;
                 res.redirect("./consultaPlanilla");
-            else
+            }
+            else {
                 if (resultado.data[0][0].outResult == 1002)
                     res.render("login.ejs",{mensaje:"Combinación de usuario/password no existe en la BD"});
-        }
-    }, 1500)
-}
-
-function filtrarNombre (nombre, res) {
-    let empleadosFiltrados = [];
-    setTimeout(async () => {
-        const resFiltroNom = await based.executeStoredProcedure('FiltrarNombre', null,
-        {inFiltroNom : nombre, outResult : 0});
-        if (resFiltroNom != undefined) {
-            for (empleado of resFiltroNom.data[0]) {
-                if (listaEmpleados.find(existe =>
-                    existe[0] === false && existe[1].Nombre === empleado.Nombre))
-                    empleadosFiltrados.push([false, empleado]);
             }
-            res.render('ventanaPrincipalAdmin.ejs', {mensajeError : "",
-            tipoDatos : "empleados", datos : empleadosFiltrados});
         }
     }, 1500)
 }
 
-function cargarPuestos() {
-    let nuevosPuestos = [];
+function obtenerMesPlanilla (res) {
     setTimeout(async () => {
-        const resultado = await based.executeStoredProcedure('ListarPuestos',
-        null, {outResult : 0});
+        const resultado = await based.executeStoredProcedure('MostrarMesPlanillaXEmpleado',
+        null, {inIdEmpleado : IdEmpleado, outResult : 0});
         if (resultado != undefined) {
-            console.log(resultado.data[0]);
-            for (puesto of resultado.data[0]) {
-                if (listaPuestos.length == 0) {
-                    nuevosPuestos.push([false, puesto]);
-                    continue;
-                }
-                else if (listaPuestos.find(existe =>
-                    existe[0] === false && existe[1].Puesto === puesto.Puesto))
-                    nuevosPuestos.push([false, puesto]);
-                else if (listaPuestos.find(existe =>
-                    existe[0] === true && existe[1].Puesto === puesto.Puesto))
-                    nuevosPuestos.push([true, [puesto]]);
-                else
-                    nuevosPuestos.push([false, puesto]);
-            }
-            listaPuestos = nuevosPuestos;
+            datosConsulta = resultado.data[0].reverse();
+            console.log(datosConsulta);
+            res.render('consultaPlanilla.ejs', {mensajeError : "",
+            tipoDatos : "planillaMensual",
+            datos : datosConsulta});
         }
     }, 1500)
 }
 
-function cargarEmpleados() {
-    let nuevosEmpleados = [];
+function obtenerDeducciones (IdMesPlanillaXEmpleado, res) {
     setTimeout(async () => {
-        const resultado = await based.executeStoredProcedure('ListarEmpleados',
-        null, {outResult : 0});
+        const resultado = await based.executeStoredProcedure('ObtenerDeduccionesXEmpleadoXMes',
+        null, {inIdMesPlanillaXEmpleado : IdMesPlanillaXEmpleado, outResult : 0});
         if (resultado != undefined) {
-            console.log(resultado.data[0]);
-            for (empleado of resultado.data[0]){
-                if (listaEmpleados.length == 0) {
-                    nuevosEmpleados.push([false, empleado]);
-                    continue;
-                }
-                else if (listaEmpleados.find(existe =>
-                    existe[0] === false && existe[1].ID === empleado.ID))
-                    nuevosEmpleados.push([false, empleado]);
-                else if (listaEmpleados.find(existe =>
-                    existe[0] === true && existe[1].ID === empleado.ID))
-                    nuevosEmpleados.push([true, empleado]);
-                else
-                    nuevosEmpleados.push([false, empleado]);
-            }
-            listaEmpleados = nuevosEmpleados;
+            console.log(resultado)
+            datosDeduccion = resultado.data[0];
+            console.log(datosDeduccion);
+            res.render('deduccionesMes.ejs', {
+                datos : datosDeduccion});
         }
     }, 1500)
 }
-
-function cargarTipoDoc() {
-    setTimeout(async () => {
-        const resultado = await based.executeStoredProcedure('ObtenerTipoDoc',
-        null, {outResult : 0});
-        if (resultado != undefined) {
-            for (tipoDoc of resultado.data[0])
-                listaTipoDoc.push(tipoDoc);
-        }
-        console.log(listaTipoDoc);
-    }, 1500)
-}
-
-function cargarDepartamentos() {
-    setTimeout(async () => {
-        const resultado = await based.executeStoredProcedure('ObtenerDepartamento',
-        null, {outResult : 0});
-        if (resultado != undefined) {
-            for (departamento of resultado.data[0])
-                listaDepartamentos.push(departamento);
-        }
-        console.log(listaDepartamentos);
-    }, 1500)
-}
-
-
 // Creacion del puerto para acceder la pagina web
 app.listen(3000)
