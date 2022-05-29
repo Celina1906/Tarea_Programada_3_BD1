@@ -37,6 +37,16 @@ app.get('/deduccionesMes', (req, res) => {
         {datos : datosDeduccion});
 })
 
+app.get('/deduccionesSemana', (req, res) => {
+    res.render('deduccionesSemana.ejs',
+    );
+})
+
+app.get('/detalleSalarioBruto', (req, res) => {
+    res.render('detalleSalarioBruto.ejs',
+    );
+})
+
 app.get('/regresarDeduccion', (req, res) => {
     res.redirect('./consultaPlanilla');
 })
