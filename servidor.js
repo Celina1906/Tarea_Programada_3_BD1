@@ -65,8 +65,7 @@ app.post('/login', (req, res) => {
     validarDatos(usuario, res);
 })
 app.post('/consultarPlanillaSemanal', (req, res) => {
-    res.render('consultaPlanilla.ejs', {mensajeError : "",
-    tipoDatos : "planillaSemanal"});
+    obtenerSemanaPlanilla(res);
 })
 
 app.post('/consultarPlanillaMensual', (req, res) => {
@@ -120,7 +119,6 @@ function obtenerDeducciones (IdMesPlanillaXEmpleado, res) {
         const resultado = await based.executeStoredProcedure('ObtenerDeduccionesXEmpleadoXMes',
         null, {inIdMesPlanillaXEmpleado : IdMesPlanillaXEmpleado, outResult : 0});
         if (resultado != undefined) {
-            console.log(resultado)
             datosDeduccion = resultado.data[0];
             console.log(datosDeduccion);
             res.render('deduccionesMes.ejs', {
@@ -128,5 +126,20 @@ function obtenerDeducciones (IdMesPlanillaXEmpleado, res) {
         }
     }, 1500)
 }
+
+function obtenerSemanaPlanilla (res) {
+    setTimeout(async () => {
+        const resultado = await based.executeStoredProcedure('MostrarSemanaPlanilla',
+        null, {inIdEmpleado : IdEmpleado, outResult : 0});
+        if (resultado != undefined) {
+            datosConsulta = resultado.data[0];
+            console.log(datosConsulta);
+            res.render('consultaPlanilla.ejs', {mensajeError : "",
+            tipoDatos : "planillaSemanal",
+            datos : datosConsulta});
+        }
+    }, 1500)
+}
+
 // Creacion del puerto para acceder la pagina web
 app.listen(3000)

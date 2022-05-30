@@ -36,8 +36,16 @@
                 <div style = "font-size: large;">
                     Planilla Semanal
                 </div>
+                <div style = "font-size: large;">
+                    Fecha | Salario Bruto | Total Deducciones | Salario Neto | Horas Ordinarias | Horas Extra | Horas Extra Doble
+                </div>
                 <select id = "planillaSemanalListBox" name = "planillaSemanalListBox" size = "15">
-                    
+                    <% for (fila of datos) { %>
+                        <option value = "<%= fila.Id %>"> <%= fila.Fecha + " | " + fila.SalarioBruto
+                            + " | " + fila.TotalDeducciones + " | " + fila.SalarioNeto + " | " +
+                            fila.HorasOrdinarias + " | " + fila.HorasExtra + " | " +
+                            fila.HorasExtraDoble %> </option>
+                    <% } %>
                 </select>
             </div>
             <div>
@@ -52,6 +60,9 @@
             <% } else if (tipoDatos == "planillaMensual") { %>
                 <div style = "font-size: large;">
                     Planilla Mensual
+                </div>
+                <div style = "font-size: large;">
+                    Mes | Salario Total | Salario Neto | Total Deducciones
                 </div>
                 <div>
                     <select id = "planillaMensualListBox" name = "planillaMensualListBox" size = "15">
