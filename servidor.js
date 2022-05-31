@@ -16,6 +16,7 @@ const based = new (require('rest-mssql-nodejs'))({
 var usuario = {};
 var datosConsulta = {};
 var datosDeduccion = {};
+var datosSalario = {};
 var IdEmpleado = 0;
 
 // Establecimiento de parametros para la pagina web
@@ -39,12 +40,12 @@ app.get('/deduccionesMes', (req, res) => {
 
 app.get('/deduccionesSemana', (req, res) => {
     res.render('deduccionesSemana.ejs',
-    );
+        {datos : datosDeduccion});
 })
 
-app.get('/detalleSalarioBruto', (req, res) => {
-    res.render('detalleSalarioBruto.ejs',
-    );
+app.get('/salarioBruto', (req, res) => {
+    res.render('salarioBruto.ejs',
+        {datos : datosSalario});
 })
 
 app.get('/regresarDeduccion', (req, res) => {
@@ -74,6 +75,15 @@ app.post('/consultarPlanillaMensual', (req, res) => {
 
 app.post('/deducciones', (req, res) => {
     obtenerDeducciones(req.body.planillaMensualListBox, res);
+})
+
+app.post('/deduccionesSem', (req, res) => {
+    obtenerDeduccionesSemana(req.body.planillaSemanalListBox, res);
+})
+
+app.post('/obtenerSalario', (req, res) => {
+    console.log("Entro");
+    obtenerSalarioBruto(req.body.planillaSemanalListBox, res);
 })
 
 app.post('/regresarDeduccion', (req, res) => {
@@ -137,6 +147,33 @@ function obtenerSemanaPlanilla (res) {
             res.render('consultaPlanilla.ejs', {mensajeError : "",
             tipoDatos : "planillaSemanal",
             datos : datosConsulta});
+        }
+    }, 1500)
+}
+
+function obtenerDeduccionesSemana (Fecha, res) {
+    setTimeout(async () => {
+        const resultado = await based.executeStoredProcedure('ObtenerDeduccionesEmpleado',
+        null, {inIdEmpleado : IdEmpleado, inFecha : Fecha, outResult : 0});
+        if (resultado != undefined) {
+            datosDeduccion = resultado.data[0];
+            console.log(datosDeduccion);
+            res.render('deduccionesSemana.ejs', {
+                datos : datosDeduccion});
+        }
+    }, 1500)
+}
+
+function obtenerSalarioBruto (Fecha, res) {
+    setTimeout(async () => {
+        const resultado = await based.executeStoredProcedure('ObtenerSalarioBruto',
+        null, {inFecha : Fecha, inIdEmpleado : IdEmpleado, outResult : 0});
+        if (resultado != undefined) {
+            console.log(resultado)
+            datosSalario = resultado.data[0];
+            console.log(datosSalario);
+            res.render('salarioBruto.ejs', {
+                datos : datosSalario});
         }
     }, 1500)
 }

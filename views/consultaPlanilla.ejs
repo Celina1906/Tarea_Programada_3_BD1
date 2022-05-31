@@ -41,7 +41,7 @@
                 </div>
                 <select id = "planillaSemanalListBox" name = "planillaSemanalListBox" size = "15">
                     <% for (fila of datos) { %>
-                        <option value = "<%= fila.Id %>"> <%= fila.Fecha + " | " + fila.SalarioBruto
+                        <option value = "<%= fila.fecha %>"> <%= fila.Fecha + " | " + fila.SalarioBruto
                             + " | " + fila.TotalDeducciones + " | " + fila.SalarioNeto + " | " +
                             fila.HorasOrdinarias + " | " + fila.HorasExtra + " | " +
                             fila.HorasExtraDoble %> </option>
@@ -49,10 +49,10 @@
                 </select>
             </div>
             <div>
-                <button formaction = "deducciones" name = "deducciones">
+                <button formaction = "deduccionesSem" name = "deduccionesSem">
                     Mostrar Deducciones
                 </button>
-                <button formaction = "" name = "salarioBruto">
+                <button formaction = "obtenerSalario" name = "obtenerSalario">
                     Detalle Salario Bruto
                 </button>
             </div>
